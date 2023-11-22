@@ -20,9 +20,12 @@ env:
   TAG: ${{ github.sha }}
   DNS_AK: ${{ secrets.DNS_AK }}
   DNS_SK: ${{ secrets.DNS_SK }}
+  OSS_AK: ${{ secrets.OSS_AK }}
+  OSS_SK: ${{ secrets.OSS_SK }}
   ROOT_PASSWORD: ${{ secrets.ADMIN_INIT_PASSWORD }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   GITLAB_OIDC_CLIENT_TOKEN: ${{ secrets.GITLAB_OIDC_CLIENT_TOKEN }}
+  HARBOR_OIDC_CLIENT_TOKEN: ${{ secrets.HARBOR_OIDC_CLIENT_TOKEN }}
 
 jobs:
   build:
@@ -119,9 +122,12 @@ jobs:
           ansible_host_key_checking=False
           dns_ak=$DNS_AK
           dns_sk=$DNS_SK
+          oss_ak=$OSS_AK
+          oss_sk=$OSS_SK
           admin_password=$ROOT_PASSWORD
           smtp_password=$SMTP_PASSWORD
           gitlab_oidc_client_token=$GITLAB_OIDC_CLIENT_TOKEN
+          harbor_oidc_client_token=$HARBOR_OIDC_CLIENT_TOKEN
           EOF
 
       - name: Deploy Gitlab
