@@ -1,9 +1,8 @@
 name: Create Resources by IAC tools 
 
 env:
-  STATE: "create"    # 可以根据需要更改初始状态
+  STATE: "create"    # 可以根据需要更改初始状态, 可选create，update, destroy
   CLOUD: "gcp"       # 选择云服务商, 可选: gcp, aws, ali, azure
-  CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
 on:
   push:
@@ -24,24 +23,50 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.1.0
+        terraform_version: 1.6.4
 
-    - name: Terraform Apply 
+    - name: Terraform Init And Apply
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_JSON }}
       run: |
+        terraform init
         if [ "$STATE" == "create" ]; then
-          terraform init
-          terraform apply -auto-approve -var="gcp_credentials=$CREDENTIALS"
+            terraform apply -auto-approve
         elif [ "$STATE" == "destroy" ]; then
-          terraform init
-          terraform apply -auto-approve -var="gcp_credentials=$CREDENTIALS"
-        # 添加其他状态的处理逻辑
+            terraform destroy -auto-approve
+        # Add handling for other states as needed
         else
-          echo "Invalid environment state"
-          exit 1
+            echo "Invalid environment state"
+            exit 1
         fi
       working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
 
-    - name: Cleanup Credentials file
-      if: always()  # 总是执行，无论前面步骤的执行结果
-      run: rm -f *credentials.json
-      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
+  vpc:
+    runs-on: ubuntu-latest
+    needs:
+      - gcs
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.6.4
+
+    - name: Terraform Init And Apply
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_JSON }}
+      run: |
+        terraform init
+        if [ "$STATE" == "create" ]; then
+            terraform apply -auto-approve
+        elif [ "$STATE" == "destroy" ]; then
+            terraform destroy -auto-approve
+        # Add handling for other states as needed
+        else
+            echo "Invalid environment state"
+            exit 1
+        fi
+      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vpc/
