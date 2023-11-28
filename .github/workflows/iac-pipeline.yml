@@ -29,11 +29,10 @@ jobs:
       with:
         terraform_version: 1.6.4
 
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v1'
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
       with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_JSON }}'
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
     - name: Terraform Init And Apply
       run: |
@@ -66,9 +65,12 @@ jobs:
       with:
         terraform_version: 1.6.4
 
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+
     - name: Terraform Init And Apply
-      env:
-        GOOGLE_CREDENTIALS: "${{ secrets.GCP_CREDENTIALS_JSON }}"
       run: |
         terraform init
         if [ "$STATE" == "create" ]; then
