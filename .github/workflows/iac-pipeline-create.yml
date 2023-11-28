@@ -5,9 +5,10 @@ env:
   CLOUD: "gcp"       # 选择云服务商, 可选: gcp, aws, ali, azure
 
 on:
+  pull_request:
   push:
-    branches:
-      - main
+    paths:
+      - '.github/workflows/iac-pipeline-create.yml'
   workflow_dispatch:
     branches:
       - main
