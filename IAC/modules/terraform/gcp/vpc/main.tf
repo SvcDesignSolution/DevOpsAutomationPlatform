@@ -10,7 +10,7 @@ resource "google_compute_network" "default" {
 
 # Create a subnet for web servers
 resource "google_compute_subnetwork" "subnet_web" {
-  name          = "web-subnet"
+  name          = "subnet-web"
   ip_cidr_range = "${cidrsubnet(local.config.vpc_cidr, 8, 0)}"
   region        = local.config.region
   network        = google_compute_network.default.name
@@ -18,7 +18,7 @@ resource "google_compute_subnetwork" "subnet_web" {
 
 # Create a subnet for database servers
 resource "google_compute_subnetwork" "subnet_db" {
-  name          = "db-subnet"
+  name          = "subnet-db"
   ip_cidr_range = "${cidrsubnet(local.config.vpc_cidr, 8, 1)}"
   region        = local.config.region
   network        = google_compute_network.default.name
@@ -46,7 +46,7 @@ resource "google_compute_router_nat" "default_nat" {
   }
 
   subnetwork {
-    name          = google_compute_network.default.self_link
+    name          = google_compute_network.subnet_web.name
     source_ip_ranges_to_nat = ["0.0.0.0/0"]
   }
 }
