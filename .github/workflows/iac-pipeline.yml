@@ -15,6 +15,10 @@ on:
 jobs:
   gcs:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
 
     steps:
     - name: Checkout code
@@ -25,9 +29,12 @@ jobs:
       with:
         terraform_version: 1.6.4
 
+    - name: Set up Google Cloud credentials
+      run: echo "${{ secrets.GCP_CREDENTIALS_JSON }}" > gcp-key.json
+
     - name: Terraform Init And Apply
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_JSON }}
+        GOOGLE_APPLICATION_CREDENTIALS: gcp-key.json
       run: |
         terraform init
         if [ "$STATE" == "create" ]; then
@@ -39,10 +46,16 @@ jobs:
             echo "Invalid environment state"
             exit 1
         fi
-      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
+
+    - name: Clean up Google Cloud credentials
+      run: rm -f gcp-key.json 
 
   vpc:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vpc/
     needs:
       - gcs
 
@@ -55,9 +68,14 @@ jobs:
       with:
         terraform_version: 1.6.4
 
+    - name: Set up Google Cloud credentials
+      run: echo "${{ secrets.GCP_CREDENTIALS_JSON }}" > gcp-key.json
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: gcp-key.json
+
     - name: Terraform Init And Apply
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_JSON }}
+        GOOGLE_APPLICATION_CREDENTIALS: gcp-key.json
       run: |
         terraform init
         if [ "$STATE" == "create" ]; then
@@ -69,4 +87,6 @@ jobs:
             echo "Invalid environment state"
             exit 1
         fi
-      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vpc/
+
+    - name: Clean up Google Cloud credentials
+      run: rm -f gcp-key.json 
