@@ -36,8 +36,6 @@ jobs:
         credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_JSON }}'
 
     - name: Terraform Init And Apply
-      env:
-        GOOGLE_CREDENTIALS: "${{ secrets.GCP_CREDENTIALS_JSON }}"
       run: |
         terraform init
         if [ "$STATE" == "create" ]; then
