@@ -1,0 +1,47 @@
+name: Create Resources by IAC tools 
+
+env:
+  STATE: "create"    # 可以根据需要更改初始状态
+  CLOUD: "gcp"       # 选择云服务商, 可选: gcp, aws, ali, azure
+  CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+  gcs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.1.0
+
+    - name: Terraform Apply 
+      run: |
+        if [ "$STATE" == "create" ]; then
+          terraform init
+          terraform apply -auto-approve -var="gcp_credentials=$CREDENTIALS"
+        elif [ "$STATE" == "destroy" ]; then
+          terraform init
+          terraform apply -auto-approve -var="gcp_credentials=$CREDENTIALS"
+        # 添加其他状态的处理逻辑
+        else
+          echo "Invalid environment state"
+          exit 1
+        fi
+      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
+
+    - name: Cleanup Credentials file
+      if: always()  # 总是执行，无论前面步骤的执行结果
+      run: rm -f *credentials.json
+      working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
