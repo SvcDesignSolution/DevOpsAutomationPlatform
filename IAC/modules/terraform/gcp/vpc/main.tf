@@ -26,11 +26,28 @@ resource "google_compute_subnetwork" "subnet_db" {
 
 # Create a router and a default route to the internet
 resource "google_compute_router" "default" {
-  name    = "default-router"
-  network = google_compute_network.default.name
+  name             = "default-router"
+  network          = google_compute_network.default.name
+  region           = local.config.region
+}
 
-  router_nat {
-    nat_ip_allocate_option = "MANUAL_ONLY"
+# Create a default route and NAT for internet access
+resource "google_compute_router_nat" "default_nat" {
+  name             = "default-nat"
+  router           = google_compute_router.default.name
+  region           = local.config.region
+  nat_ip_allocate_option = "AUTO_ONLY"
+
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = false
+    filter = "ERRORS_ONLY"  # Specify the appropriate log filter here
+  }
+
+  subnetwork {
+    name          = google_compute_network.default.self_link
+    source_ip_ranges_to_nat = ["0.0.0.0/0"]
   }
 }
 
