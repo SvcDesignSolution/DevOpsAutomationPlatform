@@ -52,13 +52,15 @@ resource "google_compute_router_nat" "default_nat" {
 }
 
 resource "google_compute_router_interface" "web-subnet-interface" {
-  name        = "web-subnet-interface"
-  subnetwork  = google_compute_subnetwork.subnet_web.name
-  router       = google_compute_router.default.name
+  name       = "web-subnet-interface"
+  region     = local.config.region
+  router     = google_compute_router.default.name
+  subnetwork = google_compute_subnetwork.subnet_web.self_link
 }
 
 resource "google_compute_router_interface" "db-subnet-interface" {
-  name        = "db-subnet-interface"
-  subnetwork  = google_compute_subnetwork.subnet_db.name
-  router       = google_compute_router.default.name
+  name       = "db-subnet-interface"
+  region     = local.config.region
+  subnetwork = google_compute_subnetwork.subnet_db.self_link
+  router     = google_compute_router.default.name
 }
