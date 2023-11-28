@@ -1,6 +1,6 @@
 # Create a VPC network
 resource "google_compute_network" "default" {
-  name                    = "devops"
+  name                    = "custom"
   project                 = local.config.project_id
   routing_mode            = "REGIONAL"
   auto_create_subnetworks = false
