@@ -113,7 +113,10 @@ jobs:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
     - name: Terraform Init And Apply
-      run: bash run_terraform.sh
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip && python -m pip install --upgrade pip jinja2 
+        python3 scripts/init.py && bash scripts/run_terraform.sh
   key_pair:
     runs-on: ubuntu-latest
     defaults:
