@@ -1,5 +1,15 @@
-sg_id: ["sg-0a2f69bf892992826"]
-ec2_type: "t3.medium"
-image_id: "ami-0d11fee2d69126ec1"
-subnet_id: subnet-00e97c682059dcbe5
-key_name: devops
+network: "default"
+region: "asia-northeast1"
+project_id: "cloudsvcsandbox"
+bucket_name: "iac_gcp_terraform_state"
+instances:
+  - name: "example-instance-1"
+    type: "n1-standard-1"
+    zone: "asia-northeast1-a"
+    image: "ubuntu-2004-lts"
+    disk_size_gb: 100
+  - name: "example-instance-2"
+    image: "ubuntu-2004-lts"
+    disk_size_gb: 100
+    type: "n1-standard-1"
+    zone: "asia-northeast1-a"
