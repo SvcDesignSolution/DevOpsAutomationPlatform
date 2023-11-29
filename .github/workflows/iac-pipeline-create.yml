@@ -119,13 +119,34 @@ jobs:
       with:
         terraform_version: 1.6.4
 
+    - name: Set up Python3/jinja2
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip && python -m pip install --upgrade pip jinja2 
+
     - name: Authenticate with Google Cloud
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
+    - name: Set up Google Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
+      with:
+        version: '>= 363.0.0'
+
+    - name: Check if SSH Metadata exists
+      id: check_ssh_metadata
+      run: bash scripts/check_ssh_metadata.sh
+
+    - name: Fetch SSH Keys
+      if: steps.check_ssh_metadata.outputs.ssh_metadata_exists == 'false'
+      run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ssh_keys.pub
+
     - name: Terraform Init And Apply
-      run: bash run_terraform.sh
+      if: steps.check_ssh_metadata.outputs.ssh_metadata_exists == 'false'
+      run: |
+        python3 scripts/init.py && bash scripts/run_terraform.sh
+
   firewall:
     runs-on: ubuntu-latest
     defaults:
