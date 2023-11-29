@@ -3,12 +3,25 @@ name: Create Resources by IAC tools
 env:
   STATE: "create"    # 可以根据需要更改初始状态, 可选create，update, destroy
   CLOUD: "gcp"       # 选择云服务商, 可选: gcp, aws, ali, azure
+  TZ: Asia/Shanghai
+  REPO: "artifact.onwalk.net"
+  IMAGE: base/${{ github.repository }} 
+  TAG: ${{ github.sha }}
+  DNS_AK: ${{ secrets.DNS_AK }}
+  DNS_SK: ${{ secrets.DNS_SK }}
+  OSS_AK: ${{ secrets.OSS_AK }}
+  OSS_SK: ${{ secrets.OSS_SK }}
+  ROOT_PASSWORD: ${{ secrets.ADMIN_INIT_PASSWORD }}
+  SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+  GITLAB_OIDC_CLIENT_TOKEN: ${{ secrets.GITLAB_OIDC_CLIENT_TOKEN }}
+  HARBOR_OIDC_CLIENT_TOKEN: ${{ secrets.HARBOR_OIDC_CLIENT_TOKEN }}
+
 
 on:
   pull_request:
   push:
     paths:
-      - '.github/workflows/iac-pipeline-create.yml'
+      - '.github/workflows/pipeline.yml'
   workflow_dispatch:
     branches:
       - main
@@ -171,5 +184,81 @@ jobs:
     - name: Terraform Init And Apply
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip && python -m pip install --upgrade pip jinja2 json
+        sudo apt-get install -y python3-pip && python -m pip install --upgrade pip jinja2
         python3 scripts/init.py && bash scripts/run_terraform.sh
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Sync aritfacts
+        run: echo "to do"
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test aritfacts
+        run: echo "to do"
+
+  setup-k3s:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - test
+      - vhost
+    defaults:
+      run:
+        shell: bash
+        working-directory: playbook/ 
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Pre setup && update submodule
+        run: |
+          sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
+          bash pre_setup.sh
+
+      - name: Setup K3S Cluster
+        shell: bash
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i hosts/inventory init_k3s_cluster_std -D
+  deploy-app:
+    runs-on: ubuntu-latest
+    needs:
+      - setup-k3s
+    defaults:
+      run:
+        shell: bash
+        working-directory: playbook/ 
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Pre setup && update submodule
+        run: |
+          sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
+          bash pre_setup.sh
+
+      - name: Deploy Gitlab
+        shell: bash
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i hosts/inventory init_gitlab -D
+
+      - name: Deploy Harbor
+        shell: bash
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i hosts/inventory init_harbor -D
+
+      - name: Deploy Chartmuseum 
+        shell: bash
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i hosts/inventory init_chartmuseum -D
