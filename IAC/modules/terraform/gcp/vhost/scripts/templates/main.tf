@@ -27,4 +27,9 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
 
   depends_on = [google_compute_address.{{ instance.name | lower }}]
 }
+
+output "{{ instance.name | lower }}" {
+  value = google_compute_address.{{ instance.name | lower }}.address
+}
+
 {% endfor %}
