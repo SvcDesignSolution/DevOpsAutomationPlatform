@@ -16,5 +16,5 @@ resource "google_compute_route" "internet_route" {
 resource "google_compute_router_interface" "internet_interface" {
   name    = "internet-interface"
   router  = google_compute_router.internet_router.name
-
+  subnetwork  = google_compute_subnetwork.public_subnet.name
 }
