@@ -28,5 +28,4 @@ resource "google_compute_instance" "instances" {
   }
 
   depends_on = [google_compute_address.instances_ip[count.index]]
-  }
 }
