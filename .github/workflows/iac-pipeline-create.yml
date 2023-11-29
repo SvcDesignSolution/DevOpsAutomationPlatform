@@ -35,7 +35,19 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
+    - name: Set up Google Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
+      with:
+        version: '>= 363.0.0'
+
+    - name: Check if GCS bucket exists
+      id: check_bucket
+      run: |
+        BUCKET_NAME="iac_gcp_terraform_state"
+        gsutil ls -b gs://${BUCKET_NAME} || echo "::set-output name=bucket_exists::false"
+
     - name: Terraform Init And Apply
+      if: steps.check_bucket.outputs.bucket_exists == 'false'
       run: bash run_terraform.sh
   network:
     runs-on: ubuntu-latest
