@@ -4,8 +4,8 @@ resource "google_compute_firewall" "{{ rule.name }}" {
   network     = "{{ rule.network }}"
   allow {
     protocol = {{ rule.allow[0].protocol }}
-    ports    = {{ rule.allow[0].ports }}
+    ports    = [{{ '"' + '", "'.join(rule.allow[0].ports) + '"' }}]
   }
-  source_ranges = {{ rule.source_ranges }}
+  source_ranges = [{{ '"' + '", "'.join(rule.source_ranges) + '"' }}]
 }
 {% endfor %}
