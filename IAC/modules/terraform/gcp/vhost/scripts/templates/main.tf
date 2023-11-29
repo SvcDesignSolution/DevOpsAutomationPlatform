@@ -18,7 +18,7 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
   }
 
   network_interface {
-    network = "default"  # Your network name
+    network = "{{ vars.network }}"
 
     access_config {
       nat_ip = google_compute_address.{{ instance.name | lower }}.address

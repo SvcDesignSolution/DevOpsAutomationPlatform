@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     vars = {
         'region': config.get('region'),
+        'network': config.get('network'),
         'project_id': config.get('project_id'),
         'instances': config.get('instances', []),
     }

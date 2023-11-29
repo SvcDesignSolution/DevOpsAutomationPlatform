@@ -1,4 +1,4 @@
-network: "default"
+network: "custom"
 region: "asia-northeast1"
 project_id: "cloudsvcsandbox"
 bucket_name: "iac_gcp_terraform_state"
