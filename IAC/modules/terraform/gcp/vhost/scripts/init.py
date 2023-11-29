@@ -25,6 +25,8 @@ if __name__ == '__main__':
     print("Loaded config:", config)
 
     vars = {
+        'region': config.get('region'),
+        'project_id': config.get('project_id'),
         'instances': config.get('instances', []),
     }
 

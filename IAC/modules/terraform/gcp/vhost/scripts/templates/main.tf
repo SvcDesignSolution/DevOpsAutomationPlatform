@@ -1,8 +1,8 @@
 {% for instance in vars.instances %}
 resource "google_compute_address" "{{ instance.name | lower }}" {
   name    = "{{ instance.name }}"
-  project = "{{ config.project_id }}"
-  region  = "{{ config.region }}"
+  project = "{{ vars.project_id }}"
+  region  = "{{ vars.region }}"
 }
 
 resource "google_compute_instance" "{{ instance.name | lower }}" {
