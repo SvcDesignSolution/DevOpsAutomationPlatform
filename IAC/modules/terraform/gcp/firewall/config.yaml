@@ -7,10 +7,5 @@ firewall_rules:
     network: default
     allow:
       - protocol: tcp
-        ports:
-          - "22"
-          - "8022"
-          - "80"
-          - "443"
-    source_ranges:
-      - "0.0.0.0/0"
+        ports: [ "22", "8022", "80", "443" ]
+    source_ranges: [ "0.0.0.0/0" ]
