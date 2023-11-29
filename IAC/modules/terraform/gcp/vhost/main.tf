@@ -1,7 +1,7 @@
 resource "google_compute_address" "instances_ip" {
   count   = length(local.config.instances)
   name    = "example-instance-ip-${count.index + 1}"
-  project = var.gcp_project_id
+  project = local.config.project_id
   region  = local.config.region
 }
 
@@ -20,15 +20,13 @@ resource "google_compute_instance" "instances" {
   }
 
   network_interface {
-    network = local.config.instances[count.index].instances_with_static_ip.network
+    network = "default"  # 你的网络名称
+
     access_config {
       nat_ip = google_compute_address.instances_ip[count.index].address
     }
   }
 
-  metadata = {
-    items = [
-      google_compute_project_metadata_item.ssh_metadata.id,
-    ]
+  depends_on = [google_compute_address.instances_ip[count.index]]
   }
 }
