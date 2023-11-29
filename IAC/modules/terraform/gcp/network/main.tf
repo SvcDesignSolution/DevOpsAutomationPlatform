@@ -2,29 +2,30 @@
 resource "google_compute_network" "default" {
   name                    = "custom"
   project                 = local.config.project_id
-  routing_mode            = "REGIONAL"
   auto_create_subnetworks = false
   delete_default_routes_on_create = true
   description             = "My custom network"
 }
 
+# 子网1：路由到互联网网关出口的子网
 resource "google_compute_subnetwork" "public_subnet" {
-  name          = "subnet-gateway"
-  ip_cidr_range = "${cidrsubnet(local.config.vpc_cidr, 8, 0)}"
-  region        = local.config.region
-  network       = google_compute_network.default.name
+  name          = "internet-subnet"
+  ip_cidr_range = "10.0.1.0/24"  # 请根据实际需要调整 IP 范围
+  network       = google_compute_network.default.id
 }
 
-resource "google_compute_subnetwork" "private_subnet-1" {
-  name          = "subnet-app"
-  ip_cidr_range = "${cidrsubnet(local.config.vpc_cidr, 8, 1)}"
-  region        = local.config.region
-  network        = google_compute_network.default.name
+# 子网2：路由到 NAT 网关出口的子网
+resource "google_compute_subnetwork" "nat_subnet" {
+  name          = "nat-subnet"
+  ip_cidr_range = "10.0.2.0/24"  # 请根据实际需要调整 IP 范围
+  network       = google_compute_network.default.id
 }
 
-resource "google_compute_subnetwork" "private_subnet-2" {
-  name          = "subnet-db"
-  ip_cidr_range = "${cidrsubnet(local.config.vpc_cidr, 8, 2)}"
-  region        = local.config.region
-  network        = google_compute_network.default.name
+# 子网3：私有的安全子网
+resource "google_compute_subnetwork" "private_subnet" {
+  name          = "private-subnet"
+  ip_cidr_range = "10.0.3.0/24"  # 请根据实际需要调整 IP 范围
+  network       = google_compute_network.default.id
 }
+
+
