@@ -1,25 +1,42 @@
 #!/bin/bash
 
+# Function to check if a variable is empty
+check_empty() {
+    if [ -z "${!1}" ]; then
+        echo "$1 is empty. Aborting."
+        exit 1
+    fi
+}
+
+# List of variables to check
+variables=("DNS_AK" "DNS_SK" "OSS_AK" "OSS_SK" "ADMIN_INIT_PASSWORD" "SMTP_PASSWORD" "GITLAB_OIDC_CLIENT_TOKEN" "HARBOR_OIDC_CLIENT_TOKEN" "HOST_USER" "SSH_PRIVATE_KEY" "SSH_HOST_IP" "HOST_DOMAIN")
+
+# Loop through variables and check if each one is empty
+for var in "${variables[@]}"; do
+    check_empty "$var"
+done
+
 sudo apt install jq ansible -y
 
 mkdir -pv ~/.ssh/
 cat > ~/.ssh/id_rsa << EOF
-${{ secrets.SSH_PRIVATE_KEY }}
+$SSH_PRIVATE_KEY
 EOF
 sudo chmod 0400 ~/.ssh/id_rsa
 md5sum ~/.ssh/id_rsa
 
 mkdir -pv hosts/
+
 cat > hosts/inventory << EOF
 [master]
-${{ secrets.HOST_DOMAIN }}               ansible_host=${{ needs.vhost.outputs.ip_address_instance_1 }}"
+$HOST_DOMAIN               ansible_host=$SSH_HOST_IP
 
 [all:vars]
 ansible_port=22
-ansible_ssh_user=${{ secrets.HOST_USER }}
+ansible_ssh_user=$HOST_USER
 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ansible_host_key_checking=False
-ingress_ip=${{ needs.deploy.vhost.ip_address_instance_1 }}"
+ingress_ip=$SSH_HOST_IP
 dns_ak=$DNS_AK
 dns_sk=$DNS_SK
 oss_ak=$OSS_AK
