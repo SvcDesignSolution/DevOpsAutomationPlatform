@@ -18,7 +18,7 @@ env:
 ingress:
   enabled: true
   hosts:
-    - name: charts.$domain
+    - name: chartmuseum.$domain
       path: /
       tls: true
       tlsSecret: $secret_name

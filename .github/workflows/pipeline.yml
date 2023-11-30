@@ -121,14 +121,6 @@ jobs:
         python -m pip install --upgrade pip jinja2 
         python3 scripts/init.py && bash scripts/run_terraform.sh
 
-    - name: Set GitHub Actions output variables 
-      run: |
-        terraform output
-        echo `terraform output` | while IFS= read -r line; do
-            key=$(printf "%s" "$line" | awk -F= '{print $1}')
-            value=$(printf "%s" "$line" | awk -F= '{print $2}')
-            echo "{name}={value}" >> $GITHUB_OUTPUT
-        done
   key_pair:
     runs-on: ubuntu-latest
     defaults:
@@ -229,24 +221,49 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
-    env:
-      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.6.4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+
+      - name: Set GitHub Actions output variables
+        id: terraform-output
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-pip jq && python -m pip install --upgrade pip jinja2
+          python3 scripts/init.py && terraform init
+          terraform output | while read -r line; do
+             if [ -z "$line" ]; then
+                 break
+             else
+               k_v=$(echo "$line" | tr -d ' ' | awk -F= '{print $1"="$2}')
+               echo "$k_v" >> $GITHUB_OUTPUT
+             fi
+          done
+        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vhost/
 
       - name: Pre setup && update submodule
         run: |
           sudo apt-get update && sudo apt-get install -y git
           git submodule update --init --recursive || true
           bash pre_setup.sh
+        env:
+          SSH_HOST_IP: ${{ steps.terraform-output.outputs.example-instance-1 }}
 
       - name: Setup K3S Cluster
         shell: bash
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i hosts/inventory init_k3s_cluster_std -D
-  deploy-Gitlab:
+  deploy-Apps:
     runs-on: ubuntu-latest
     needs:
       - setup-k3s
@@ -254,70 +271,53 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
-    env:
-      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.6.4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+
+      - name: Set GitHub Actions output variables
+        id: terraform-output
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-pip jq && python -m pip install --upgrade pip jinja2
+          python3 scripts/init.py && terraform init
+          terraform output | while read -r line; do
+             if [ -z "$line" ]; then
+                 break
+             else
+               k_v=$(echo "$line" | tr -d ' ' | awk -F= '{print $1"="$2}')
+               echo "$k_v" >> $GITHUB_OUTPUT
+             fi
+          done
+        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vhost/
 
       - name: Pre setup && update submodule
         run: |
           sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
           bash pre_setup.sh
+        env:
+          SSH_HOST_IP: ${{ steps.terraform-output.outputs.example-instance-1 }}
 
       - name: Deploy Gitlab
-        shell: bash
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i hosts/inventory init_gitlab -D
 
-  deploy-Harbor:
-    runs-on: ubuntu-latest
-    needs:
-      - setup-k3s
-    defaults:
-      run:
-        shell: bash
-        working-directory: playbook/ 
-    env:
-      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Pre setup && update submodule
-        run: |
-          sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
-          bash pre_setup.sh
-
-
       - name: Deploy Harbor
-        shell: bash
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i hosts/inventory init_harbor -D
 
-  deploy-Chartmuseum:
-    runs-on: ubuntu-latest
-    needs:
-      - setup-k3s
-    defaults:
-      run:
-        shell: bash
-        working-directory: playbook/ 
-    env:
-      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Pre setup && update submodule
-        run: |
-          sudo apt-get update && sudo apt-get install -y git && git submodule update --init --recursive
-          bash pre_setup.sh
-
       - name: Deploy Chartmuseum 
-        shell: bash
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i hosts/inventory init_chartmuseum -D
