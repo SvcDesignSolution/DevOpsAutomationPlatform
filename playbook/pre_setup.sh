@@ -9,7 +9,7 @@ check_empty() {
 }
 
 # List of variables to check
-variables=("DNS_AK" "DNS_SK" "OSS_AK" "OSS_SK" "ADMIN_INIT_PASSWORD" "SMTP_PASSWORD" "GITLAB_OIDC_CLIENT_TOKEN" "HARBOR_OIDC_CLIENT_TOKEN" "HOST_USER" "SSH_PRIVATE_KEY" "SSH_HOST_IP" "HOST_DOMAIN")
+variables=("DNS_AK" "DNS_SK" "OSS_AK" "OSS_SK" "ROOT_PASSWORD" "SMTP_PASSWORD" "GITLAB_OIDC_CLIENT_TOKEN" "HARBOR_OIDC_CLIENT_TOKEN" "HOST_USER" "SSH_PRIVATE_KEY" "SSH_HOST_IP" "HOST_DOMAIN")
 
 # Loop through variables and check if each one is empty
 for var in "${variables[@]}"; do
