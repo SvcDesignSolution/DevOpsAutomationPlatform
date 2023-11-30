@@ -115,8 +115,18 @@ jobs:
     - name: Terraform Init And Apply
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip && python -m pip install --upgrade pip jinja2 
+        sudo apt-get install -y python3-pip jq && python -m pip install --upgrade pip jinja2 
         python3 scripts/init.py && bash scripts/run_terraform.sh
+
+    - name: Extract and Pass IP Addresses
+      run: |
+        output_json=$(terraform output -json)
+        for key in $(echo "$output_json" | jq -r 'keys[]'); do
+            value=$(echo "$output_json" | jq -r ".$key.value")
+            echo "$key: $value"
+            echo "::set-output name=${key}::${value}"
+        done
+
   key_pair:
     runs-on: ubuntu-latest
     defaults:

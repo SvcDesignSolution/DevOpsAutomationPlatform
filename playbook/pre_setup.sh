@@ -12,14 +12,14 @@ md5sum ~/.ssh/id_rsa
 mkdir -pv hosts/
 cat > hosts/inventory << EOF
 [master]
-${{ secrets.HOST_DOMAIN }}               ansible_host=${{ secrets.HOST_IP }}
+${{ secrets.HOST_DOMAIN }}               ansible_host=${{ needs.vhost.outputs.ip_address_instance_1 }}"
 
 [all:vars]
 ansible_port=22
 ansible_ssh_user=${{ secrets.HOST_USER }}
 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ansible_host_key_checking=False
-ingress_ip=${{ secrets.HOST_IP }}
+ingress_ip=${{ needs.deploy.vhost.ip_address_instance_1 }}"
 dns_ak=$DNS_AK
 dns_sk=$DNS_SK
 oss_ak=$OSS_AK
