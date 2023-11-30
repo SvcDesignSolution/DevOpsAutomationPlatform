@@ -16,7 +16,6 @@ env:
   GITLAB_OIDC_CLIENT_TOKEN: ${{ secrets.GITLAB_OIDC_CLIENT_TOKEN }}
   HARBOR_OIDC_CLIENT_TOKEN: ${{ secrets.HARBOR_OIDC_CLIENT_TOKEN }}
   SSH_USER: ${{ secrets.HOST_USER }}
-  SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
   SSH_HOST_DOMAIN: ${{ secrets.HOST_DOMAIN }} 
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -225,6 +224,8 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
+    env:
+      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
@@ -248,6 +249,8 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
+    env:
+      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
@@ -271,6 +274,8 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
+    env:
+      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
@@ -295,6 +300,8 @@ jobs:
       run:
         shell: bash
         working-directory: playbook/ 
+    env:
+      SSH_HOST_IP: ${{ needs.vhost.outputs.ip_address_instance_1 }}
 
     steps:
       - uses: actions/checkout@v3
