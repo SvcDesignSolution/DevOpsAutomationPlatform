@@ -18,7 +18,8 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
   }
 
   network_interface {
-    network = "{{ vars.network }}"
+    network = "{{ instance.network }}"
+    subnetwork = "{{ instance.subnetwork }}"
 
     access_config {
       nat_ip = google_compute_address.{{ instance.name | lower }}.address

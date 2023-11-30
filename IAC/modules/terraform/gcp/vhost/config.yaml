@@ -1,4 +1,3 @@
-network: "custom"
 region: "asia-northeast1"
 project_id: "cloudsvcsandbox"
 bucket_name: "iac_gcp_terraform_state"
@@ -8,8 +7,12 @@ instances:
     zone: "asia-northeast1-a"
     image: "ubuntu-2004-lts"
     disk_size_gb: 100
+    network: "custom"
+    subnetwork: internet-subnet
   - name: "example-instance-2"
     image: "ubuntu-2004-lts"
     disk_size_gb: 100
     type: "n1-standard-1"
     zone: "asia-northeast1-a"
+    network: "custom"
+    subnetwork: internet-subnet
