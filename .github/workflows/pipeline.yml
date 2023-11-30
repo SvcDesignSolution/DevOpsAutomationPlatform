@@ -20,7 +20,7 @@ env:
   SSH_HOST_DOMAIN: ${{ secrets.HOST_DOMAIN }} 
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-on
+on:
   pull_request:
   push:
     paths:
