@@ -119,13 +119,7 @@ jobs:
         python3 scripts/init.py && bash scripts/run_terraform.sh
 
     - name: Extract and Pass IP Addresses
-      run: |
-        output_json=$(terraform output -json)
-        for key in $(echo "$output_json" | jq -r 'keys[]'); do
-            value=$(echo "$output_json" | jq -r ".$key.value")
-            echo "$key: $value"
-            echo "::set-output name=${key}::${value}"
-        done
+      run: python3 scripts/output.py
 
   key_pair:
     runs-on: ubuntu-latest
