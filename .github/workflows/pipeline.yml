@@ -122,8 +122,13 @@ jobs:
         python3 scripts/init.py && bash scripts/run_terraform.sh
 
     - name: Set GitHub Actions output variables 
-      run: bash scripts/output.sh
-
+      run: |
+        terraform output
+        echo `terraform output` | while IFS= read -r line; do
+            key=$(printf "%s" "$line" | awk -F= '{print $1}')
+            value=$(printf "%s" "$line" | awk -F= '{print $2}')
+            echo "{name}={value}" >> $GITHUB_OUTPUT
+        done
   key_pair:
     runs-on: ubuntu-latest
     defaults:
