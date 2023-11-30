@@ -9,7 +9,7 @@ check_empty() {
 }
 
 # List of variables to check
-variables=("DNS_AK" "DNS_SK" "OSS_AK" "OSS_SK" "ROOT_PASSWORD" "SMTP_PASSWORD" "GITLAB_OIDC_CLIENT_TOKEN" "HARBOR_OIDC_CLIENT_TOKEN" "HOST_USER" "SSH_PRIVATE_KEY" "SSH_HOST_IP" "HOST_DOMAIN")
+variables=("DNS_AK" "DNS_SK" "OSS_AK" "OSS_SK" "ROOT_PASSWORD" "SMTP_PASSWORD" "GITLAB_OIDC_CLIENT_TOKEN" "HARBOR_OIDC_CLIENT_TOKEN" "SSH_USER" "SSH_HOST_IP" "SSH_HOST_DOMAIN" "SSH_PRIVATE_KEY")
 
 # Loop through variables and check if each one is empty
 for var in "${variables[@]}"; do
@@ -29,11 +29,11 @@ mkdir -pv hosts/
 
 cat > hosts/inventory << EOF
 [master]
-$HOST_DOMAIN               ansible_host=$SSH_HOST_IP
+$SSH_HOST_DOMAIN               ansible_host=$SSH_HOST_IP
 
 [all:vars]
 ansible_port=22
-ansible_ssh_user=$HOST_USER
+ansible_ssh_user=$SSH_USER
 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ansible_host_key_checking=False
 ingress_ip=$SSH_HOST_IP
