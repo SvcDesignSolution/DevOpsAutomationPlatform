@@ -86,3 +86,11 @@ Server 相关 secrets 变量
 | name | URI |
 | ---  | --- |
 |      |     |
+
+#  Repo Init
+
+git submodule add https://github.com/svc-design/iac_modules.git iac_modules
+git submodule add https://github.com/svc-design/playbook.git playbook
+git submodule init
+git submodule update
+git submodule update --init --recursive

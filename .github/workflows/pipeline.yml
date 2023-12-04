@@ -34,7 +34,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/gcs/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/gcs/
 
     steps:
     - name: Checkout code
@@ -69,7 +69,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/network/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/network/
     needs:
       - gcs
 
@@ -94,7 +94,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vhost/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/vhost/
     needs:
       - gcs
       - network
@@ -129,7 +129,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/key_pair/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/key_pair/
     needs:
       - gcs
 
@@ -172,7 +172,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/firewall/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/firewall/
     needs:
       - gcs
       - network
@@ -251,7 +251,7 @@ jobs:
                echo "$k_v" >> $GITHUB_OUTPUT
              fi
           done
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vhost/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/vhost/
 
       - name: Pre setup && update submodule
         run: |
@@ -301,7 +301,7 @@ jobs:
                echo "$k_v" >> $GITHUB_OUTPUT
              fi
           done
-        working-directory: IAC/modules/terraform/${{ env.CLOUD }}/vhost/
+        working-directory: iac_modules/terraform/${{ env.CLOUD }}/vhost/
 
       - name: Pre setup && update submodule
         run: |
