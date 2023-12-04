@@ -1,4 +1,6 @@
-data "google_compute_project_metadata" "current" { }
+locals {
+  ssh_keys_content = file("ssh_keys.pub")
+}
 
 {% for instance in vars.instances %}
 resource "google_compute_address" "{{ instance.name | lower }}" {
@@ -30,7 +32,7 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
 
   metadata = {
     "ssh-keys" = <<EOF
-        "ubuntu:${data.google_compute_project_metadata.current.metadata["ssh-keys"]}"
+        "ubuntu:${local.ssh_keys_content}"
     EOF
   }
 

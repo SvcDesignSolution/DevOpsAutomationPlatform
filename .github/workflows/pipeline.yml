@@ -115,7 +115,6 @@ jobs:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
     - name: Fetch SSH Keys
-      if: steps.check_ssh_metadata.outputs.ssh_metadata_exists == 'false'
       run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ssh_keys.pub
 
     - name: Terraform Init And Apply
