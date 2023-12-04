@@ -256,7 +256,7 @@ jobs:
           git submodule update --init --recursive || true
           bash pre_setup.sh
         env:
-          SSH_HOST_IP: ${{ steps.terraform-output.outputs.example-instance-1 }}
+          SSH_HOST_IP: ${{ steps.terraform-output.outputs.devops }}
 
       - name: Setup K3S Cluster
         shell: bash
