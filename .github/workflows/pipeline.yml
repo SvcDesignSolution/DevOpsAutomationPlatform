@@ -284,7 +284,7 @@ jobs:
         run: |
           bash pre_setup.sh
         env:
-          SSH_HOST_IP: ${{ steps.terraform-output.outputs.devops }}
+          SSH_HOST_IP: ${{ steps.terraform-output.outputs.server }}
         working-directory: playbook/ 
 
       - name: Setup K3S Cluster
@@ -338,7 +338,7 @@ jobs:
         run: |
           bash pre_setup.sh
         env:
-          SSH_HOST_IP: ${{ steps.terraform-output.outputs.devops }}
+          SSH_HOST_IP: ${{ steps.terraform-output.outputs.server }}
         working-directory: playbook/ 
 
       - name: Deploy Gitlab
