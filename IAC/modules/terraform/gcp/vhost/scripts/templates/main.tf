@@ -32,8 +32,8 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
 
   metadata = {
     "ssh-keys" = <<EOF
-        "ubuntu:${local.ssh_keys_content}"
-    EOF
+ubuntu:${local.ssh_keys_content}
+EOF
   }
 
   depends_on = [google_compute_address.{{ instance.name | lower }}]
