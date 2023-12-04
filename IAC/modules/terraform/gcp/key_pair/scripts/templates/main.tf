@@ -1,5 +1,7 @@
-resource "google_compute_project_metadata" "ssh_metadata" {
+resource "google_compute_project_metadata" "default" {
   metadata = {
-    ssh-keys = local.ssh_keys_content
+    "ssh-keys" = <<EOF
+        "ubuntu:${local.ssh_keys_content}"
+    EOF
   }
 }
