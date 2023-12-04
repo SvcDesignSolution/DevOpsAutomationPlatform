@@ -1,3 +1,7 @@
+data "local_file" "ssh_key" {
+  filename = local.ssh_key_path
+}
+
 {% for instance in vars.instances %}
 resource "google_compute_address" "{{ instance.name | lower }}" {
   name    = "{{ instance.name }}"
@@ -24,6 +28,12 @@ resource "google_compute_instance" "{{ instance.name | lower }}" {
     access_config {
       nat_ip = google_compute_address.{{ instance.name | lower }}.address
     }
+  }
+
+  metadata = {
+    "ssh-keys" = <<EOF
+        "ubuntu:${data.local_file.ssh_key.content}"
+    EOF
   }
 
   depends_on = [google_compute_address.{{ instance.name | lower }}]
